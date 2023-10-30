@@ -1,38 +1,28 @@
-# Portfolio Starter Kit
+# DevOpsAssignment1
 
-This portfolio is built with **Next.js** and a library called [Nextra](https://nextra.vercel.app/). It allows you to write Markdown and focus on the _content_ of your portfolio. This starter includes:
+Übung2:
 
-- Automatically configured to handle Markdown/MDX
-- Generates an RSS feed based on your posts
-- A beautiful theme included out of the box
-- Easily categorize posts with tags
-- Fast, optimized web font loading
+Deployment:
 
-https://demo.vercel.blog
+Der Deployment-Controller mit dem Namen "devops-webapp" sorgt dafür, dass eine bestimmte Anzahl von Pods (in diesem Fall 2) bereitgestellt wird. Dieser Controller steuert auch Aktualisierungen der Anwendung.
+Der Container innerhalb des Pods verwendet das Bild "goldissalar/devops-webapp:1.0" und hat eine spezifische Ressourcenkonfiguration.
+Es sind Readiness- und Liveness-Proben konfiguriert, die sicherstellen, dass die Anwendung ordnungsgemäß läuft.
+Die Strategie für Updates ist als Rolling Update festgelegt.
 
-## Configuration
 
-1. Update your name in `theme.config.js` or change the footer.
-1. Update your name and site URL for the RSS feed in `scripts/gen-rss.js`.
-1. Update the meta tags in `pages/_document.tsx`.
-1. Update the posts inside `pages/posts/*.md` with your own content.
+Service:
 
-## Deploy your own
+Der Service mit dem Namen "devops-webapp-service" ermöglicht den Zugriff auf die bereitgestellte Anwendung.
+Er verwendet Port 80 und leitet den Datenverkehr an Port 3000 der Pods weiter.
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example) or preview live with [StackBlitz](https://stackblitz.com/github/vercel/next.js/tree/canary/examples/blog)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/next.js/tree/canary/examples/blog&project-name=portfolio&repository-name=portfolio)
+HorizontalPodAutoscaler (HPA):
 
-## How to use
+Die HPA-Ressource mit dem Namen "web-app-hpa" ist für die automatische Skalierung der Pods verantwortlich.
+Sie ist so konfiguriert, dass sie die Anzahl der Pods basierend auf der CPU-Auslastung anpasst. Wenn die CPU-Auslastung 30% erreicht, werden bis zu 5 Pods erstellt.
+Die HPA-Ressource arbeitet mit dem Deployment "devops-webapp" zusammen.
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
+ich habe durch den Befehl kubectl run -i --tty load-generator --rm --image=busybox:1.28 --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://devops-webapp-service/; done" ein load-generator ausgeführt um zu überprüfen, ob weitere Pods erstellt werden, wenn die Auslastung erreicht wurde.
 
-```bash
-npx create-next-app --example blog my-blog
-# or
-yarn create next-app --example blog my-blog
-# or
-pnpm create next-app --example blog my-blog
-```
-
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+Hier ist zu sehen, dass es funktioniert hat:
+<img width="598" alt="image" src="https://github.com/goldissalar/DevOpsAssignment1/assets/68482747/02c2d13e-9707-4d29-ba78-2e7a287e1bda">
